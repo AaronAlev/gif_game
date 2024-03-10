@@ -1,0 +1,27 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-image: linear-gradient(to top, rgb(255, 167, 84), rgb(255, 244, 190));
+  color: rgb(47, 30, 30);
+  font-size: 20px;
+}
+
+.game-container {
+  display: absolute;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px;
+  background-color: rgb(245, 243, 231);
+  height: 80vh;
+  width: 150vh;
+  border: 3px solid rgb(208, 179, 111);
+}
+
+.root {
+  height: 80vh;
+  width: 150vh;
+}
