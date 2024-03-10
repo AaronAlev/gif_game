@@ -2,10 +2,9 @@ import './styles/app.css';
 import React, { useEffect, useState } from 'react';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getDatabase, ref, set, onDisconnect, onValue} from 'firebase/database';
-import { faPlay } from '@fortawesome/free-solid-svg-icons';
-import { StyledPlayIcon, SendContainer } from './FontAwesomeIcons';
-import { sendMessage } from './scripts/chat';
-import { handleUsername } from './scripts/username';
+import UsernameScreen from './components/UsernameScreen';
+import PreGame from './components/PreGame';
+import GameRun from './components/GameRun';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -15,7 +14,6 @@ function App() {
   const [allPlayersRef, setAllPlayersRef] = useState([]);
   const [gameState, setGameState] = useState(false);
   const [message, setMessage] = useState('');
-  const [chat, setChat] = useState([]);
 
   const auth = getAuth();
   const database = getDatabase();
@@ -82,61 +80,30 @@ function App() {
   return (
     <div>
       {!usernameSet &&(
-        <div>
-          <form onSubmit={(e) => handleUsername(e, username, playerId, playerRef, setUsernameSet)} id="set-name">
-            <label>Username:</label>
-            <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
-            <button type='submit'>submit</button>
-          </form>
-        </div>
+        <UsernameScreen 
+        username={username}
+        playerId={playerId}
+        playerRef={playerRef} 
+        setUsername={setUsername} 
+        setUsernameSet={setUsernameSet}
+        />
       )}
       {usernameSet && !gameState &&(
-        <div className='game'>
-        <div id="players">
-          <div>Players in the lobby:</div>
-          {allPlayersRef.map((player) => (
-            <div key={player.id}>
-              {player.name}
-              {player.id === playerId && (
-                <span className="faded"> (you) </span>
-              )}
-              </div>
-          ))}
-        </div>
-        <div className="start-game">
-          <form onSubmit={gameStart} id='start-game'>
-            <button type="submit" id='start-game'>Start Game</button>
-          </form>
-        </div>
-      </div>
+        <PreGame
+        allPlayersRef={allPlayersRef}
+        playerId={playerId}
+        gameStart={gameStart}
+        />
       )}
       {gameState && usernameSet &&(
-        <div className='game'>
-          <div id="players">
-            <div><p>Players in the lobby:</p></div>
-            {allPlayersRef.map((player) => (
-              <div key={player.id}>
-                {player.name}
-                {player.id === playerId && (
-                  <span class="faded">(you)</span>
-                )}
-              </div>
-            ))}
-          </div>
-          <div id="board">
-            <div>Game board goes here</div>
-            <form onSubmit={(e) => sendMessage(e, message, inputRef, playerId, database, setMessage)}>
-              <input 
-              ref={inputRef}
-              type="text" 
-              id="chat-input" 
-              onChange={(e) => setMessage(e.target.value)}
-              />
-              <SendContainer type="submit"><StyledPlayIcon icon={faPlay}/></SendContainer>
-            </form>
-          </div>
-
-        </div> 
+        <GameRun
+          allPlayersRef={allPlayersRef}
+          playerId={playerId}
+          inputRef={inputRef}
+          database={database}
+          setMessage={setMessage}
+          message={message}
+        />
       )}
     </div>
   );

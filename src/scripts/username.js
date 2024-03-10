@@ -1,4 +1,4 @@
-import {set } from 'firebase/database';
+import { set } from 'firebase/database';
 
 const handleUsername = (event, username, playerId, playerRef, setUsernameSet) => {
     event.preventDefault();
