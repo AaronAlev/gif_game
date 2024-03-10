@@ -2,6 +2,8 @@ import './styles/app.css';
 import React, { useEffect, useState } from 'react';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getDatabase, ref, set, onDisconnect, onValue} from 'firebase/database';
+import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import { StyledPlayIcon, SendContainer } from './FontAwesomeIcons';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -76,8 +78,10 @@ function App() {
             score: data.score,
             leader: data.leader
           };
-        })
+        });
         setAllPlayersRef(playersArray);
+      } else {
+        set(ref(database, 'gameState'), false);
       }
     })
     return () => unsubscribe();
@@ -102,7 +106,7 @@ function App() {
             <div key={player.id}>
               {player.name}
               {player.id === playerId && (
-                <span class="faded"> (you) </span>
+                <span className="faded"> (you) </span>
               )}
               </div>
           ))}
@@ -117,7 +121,7 @@ function App() {
       {gameState && usernameSet &&(
         <div className='game'>
           <div id="players">
-            <div>Players in the lobby:</div>
+            <div><p>Players in the lobby:</p></div>
             {allPlayersRef.map((player) => (
               <div key={player.id}>
                 {player.name}
@@ -127,7 +131,14 @@ function App() {
               </div>
             ))}
           </div>
-          <div>Coming soon... and the other little fibs I whisper to my own reflection.</div>
+          <div id="board">
+            <div>Game board goes here</div>
+            <form>
+              <input type="text" id="chat-input" />
+              <SendContainer type="submit"><StyledPlayIcon icon={faPlay}/></SendContainer>
+            </form>
+          </div>
+
         </div> 
       )}
     </div>
