@@ -5,6 +5,7 @@ import { getDatabase, ref, set, onDisconnect, onValue} from 'firebase/database';
 import UsernameScreen from './components/UsernameScreen';
 import PreGame from './components/PreGame';
 import GameRun from './components/GameRun';
+import ToggleButton from './components/changeview';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -14,6 +15,7 @@ function App() {
   const [allPlayersRef, setAllPlayersRef] = useState([]);
   const [gameState, setGameState] = useState(false);
   const [message, setMessage] = useState('');
+  const [chatActive, setChatActive] = useState(true);
 
   const auth = getAuth();
   const database = getDatabase();
@@ -95,7 +97,7 @@ function App() {
         gameStart={gameStart}
         />
       )}
-      {gameState && usernameSet &&(
+      {gameState && usernameSet && chatActive === false &&(
         <GameRun
           allPlayersRef={allPlayersRef}
           playerId={playerId}
@@ -103,7 +105,14 @@ function App() {
           database={database}
           setMessage={setMessage}
           message={message}
+          setChatActive={setChatActive}
         />
+      )}
+      {chatActive === true && gameState &&(
+        <div>
+          <h1>Chat</h1>
+          <ToggleButton setChatActive={setChatActive}/>
+        </div>
       )}
     </div>
   );

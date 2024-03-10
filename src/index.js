@@ -7,7 +7,7 @@ import { getAuth } from 'firebase/auth';
 import 'firebase/database';
 
 const firebaseConfig = {
-  // Nothing to see here
+  // Firebase Config
 };
 
 const app = initializeApp(firebaseConfig);
