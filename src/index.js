@@ -7,7 +7,7 @@ import { getAuth } from 'firebase/auth';
 import 'firebase/database';
 
 const firebaseConfig = {
-  // Firebase Config
+ // Hidden
 };
 
 const app = initializeApp(firebaseConfig);

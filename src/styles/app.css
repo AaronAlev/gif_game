@@ -124,6 +124,27 @@
     color: white;
 }
 
+#chat {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 2px;
+}
+
+#chat div {
+    display: flex;
+    flex-direction: column;
+    padding-left: 10px;
+    width: calc(100% - 20px);
+}
+
+#chat div p {
+    border: 1px solid black;
+    padding: 1px;
+    margin: 0px;
+    width: 100%;
+}
+
 .change-view {
     width: 100%;
     height: 100%;

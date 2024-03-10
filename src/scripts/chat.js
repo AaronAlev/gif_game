@@ -1,6 +1,6 @@
 import { ref, set } from 'firebase/database';
 
-const sendMessage = (event, message, inputRef, playerId, database, setMessage) => {
+const sendMessage = (event, message, inputRef, username, database, setMessage) => {
     event.preventDefault();
     if (message.trim() === '') {
       return;
@@ -9,7 +9,7 @@ const sendMessage = (event, message, inputRef, playerId, database, setMessage) =
       const messageReference = ref(database, `chat/${message}`);
       set(messageReference, {
         message, 
-        sender: playerId,
+        sender: username,
         time: new Date().getTime()
       })
     }

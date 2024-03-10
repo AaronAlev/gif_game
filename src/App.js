@@ -5,7 +5,7 @@ import { getDatabase, ref, set, onDisconnect, onValue} from 'firebase/database';
 import UsernameScreen from './components/UsernameScreen';
 import PreGame from './components/PreGame';
 import GameRun from './components/GameRun';
-import ToggleButton from './components/changeview';
+import Chat from './components/Chat';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -13,14 +13,16 @@ function App() {
   const [playerRef, setPlayerRef] = useState(null);
   const [usernameSet, setUsernameSet] = useState(false);
   const [allPlayersRef, setAllPlayersRef] = useState([]);
+  const [allMessagesRef, setAllMessagesRef] = useState([]);
   const [gameState, setGameState] = useState(false);
   const [message, setMessage] = useState('');
   const [chatActive, setChatActive] = useState(true);
 
+  const inputRef = React.createRef();
   const auth = getAuth();
   const database = getDatabase();
 
-  useEffect(() => {
+  useEffect(() => { // Sets the player id and reference
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setPlayerId(user.uid);
@@ -35,7 +37,7 @@ function App() {
     return () => unsubscribe();
   }, [auth, database]);
 
-  useEffect(() => {
+  useEffect(() => { // Reads the game state from the database
     const gameStateRef = ref(database, 'gameState');
     const unsubscribe = onValue(gameStateRef, (snapshot) => {
       const gameState = snapshot.val();
@@ -44,18 +46,18 @@ function App() {
     return () => unsubscribe();
   }, [database]);
 
-  const gameStart = () => {
+  const gameStart = () => { // Starts the game
     console.log('game start');
     set(ref(database, 'gameState'), true);
   };
 
-  useEffect(() => {
+  useEffect(() => { // Signs the user in anonymously
     signInAnonymously(auth).catch((error) => {
       console.log(error);
     });
   }, [auth]);
 
-  useEffect(() => {
+  useEffect(() => { // Reads all players from the database
     const allPlayersRef = ref(database, 'players');
 
     const unsubscribe = onValue(allPlayersRef, (snapshot) => {
@@ -77,8 +79,27 @@ function App() {
     return () => unsubscribe();
   }, [database]);
 
+  useEffect(() => { // Reads all messages from the chat
+    const chatRef = ref(database, 'chat');
+    const unsubscribe = onValue(chatRef, (snapshot) => {
+      const chatData = snapshot.val();
+      if (chatData) {
+        const messageArray = Object.entries(chatData).map(([id, data]) => {
+          return {
+            sender: data.sender,
+            message: data.message,
+            time: data.time
+          };
+        });
+        setAllMessagesRef(messageArray);
+      }
+    });
 
-  const inputRef = React.createRef();
+    return () => unsubscribe();
+  }, [database]);
+
+
+  
   return (
     <div>
       {!usernameSet &&(
@@ -106,13 +127,16 @@ function App() {
           setMessage={setMessage}
           message={message}
           setChatActive={setChatActive}
+          username={username}
         />
       )}
-      {chatActive === true && gameState &&(
-        <div>
-          <h1>Chat</h1>
-          <ToggleButton setChatActive={setChatActive}/>
-        </div>
+      {chatActive === true && gameState && usernameSet &&(
+        <Chat
+          allPlayersRef={allPlayersRef}
+          playerId={playerId}
+          setChatActive={setChatActive}
+          allMessagesRef={allMessagesRef}
+        />
       )}
     </div>
   );

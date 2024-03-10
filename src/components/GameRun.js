@@ -3,7 +3,7 @@ import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import { StyledPlayIcon, SendContainer } from '../FontAwesomeIcons';
 import SideBar from "./SideBar";
 
-const GameRun = ({allPlayersRef, playerId, inputRef, database, setMessage, message, setChatActive}) => {
+const GameRun = ({allPlayersRef, playerId, inputRef, database, setMessage, message, setChatActive, username}) => {
     return (
         <div className='game'>
           <SideBar allPlayersRef={allPlayersRef} playerId={playerId} setChatActive={setChatActive}/>
@@ -11,7 +11,7 @@ const GameRun = ({allPlayersRef, playerId, inputRef, database, setMessage, messa
             <div>
               Game board goes here
             </div>
-            <form onSubmit={(e) => sendMessage(e, message, inputRef, playerId, database, setMessage)}>
+            <form onSubmit={(e) => sendMessage(e, message, inputRef, username, database, setMessage)}>
               <input 
               ref={inputRef}
               type="text" 
