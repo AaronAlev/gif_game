@@ -2,13 +2,12 @@ import './styles/index.css';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
-
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import 'firebase/database';
 
 const firebaseConfig = {
-  // Removed for commit
+  //Hidden for security reasons
 };
 
 const app = initializeApp(firebaseConfig);

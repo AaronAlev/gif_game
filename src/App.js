@@ -4,6 +4,8 @@ import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { getDatabase, ref, set, onDisconnect, onValue} from 'firebase/database';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import { StyledPlayIcon, SendContainer } from './FontAwesomeIcons';
+import { sendMessage } from './scripts/chat';
+import { handleUsername } from './scripts/username';
 
 function App() {
   const [username, setUsername] = useState('');
@@ -12,6 +14,8 @@ function App() {
   const [usernameSet, setUsernameSet] = useState(false);
   const [allPlayersRef, setAllPlayersRef] = useState([]);
   const [gameState, setGameState] = useState(false);
+  const [message, setMessage] = useState('');
+  const [chat, setChat] = useState([]);
 
   const auth = getAuth();
   const database = getDatabase();
@@ -30,20 +34,6 @@ function App() {
 
     return () => unsubscribe();
   }, [auth, database]);
-
-  const handleUsername = (event) => {
-    event.preventDefault();
-
-    if (username.trim() !== '') {
-      set(playerRef, {
-        id: playerId,
-        name: username,
-        leader: false,
-        score: 0
-      });
-      setUsernameSet(true);
-    }
-  };
 
   useEffect(() => {
     const gameStateRef = ref(database, 'gameState');
@@ -87,11 +77,13 @@ function App() {
     return () => unsubscribe();
   }, [database]);
 
+
+  const inputRef = React.createRef();
   return (
     <div>
       {!usernameSet &&(
         <div>
-          <form onSubmit={handleUsername} id="set-name">
+          <form onSubmit={(e) => handleUsername(e, username, playerId, playerRef, setUsernameSet)} id="set-name">
             <label>Username:</label>
             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)}/>
             <button type='submit'>submit</button>
@@ -133,8 +125,13 @@ function App() {
           </div>
           <div id="board">
             <div>Game board goes here</div>
-            <form>
-              <input type="text" id="chat-input" />
+            <form onSubmit={(e) => sendMessage(e, message, inputRef, playerId, database, setMessage)}>
+              <input 
+              ref={inputRef}
+              type="text" 
+              id="chat-input" 
+              onChange={(e) => setMessage(e.target.value)}
+              />
               <SendContainer type="submit"><StyledPlayIcon icon={faPlay}/></SendContainer>
             </form>
           </div>
