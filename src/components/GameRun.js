@@ -1,7 +1,8 @@
-import { sendMessage } from "../scripts/chat";
+import { sendMessage } from "../scripts/chatInput";
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
 import { StyledPlayIcon, SendContainer } from '../FontAwesomeIcons';
 import SideBar from "./SideBar";
+import GifSlot from "./GifSlot";
 
 const GameRun = ({allPlayersRef, playerId, inputRef, database, setMessage, message, setChatActive, username}) => {
     return (
@@ -9,10 +10,11 @@ const GameRun = ({allPlayersRef, playerId, inputRef, database, setMessage, messa
           <SideBar allPlayersRef={allPlayersRef} playerId={playerId} setChatActive={setChatActive}/>
           <div id="board">
             <div>
-              Game board goes here
+              <GifSlot />
             </div>
             <form onSubmit={(e) => sendMessage(e, message, inputRef, username, database, setMessage)}>
               <input 
+              autoComplete="off"
               ref={inputRef}
               type="text" 
               id="chat-input" 

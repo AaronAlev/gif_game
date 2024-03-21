@@ -17,6 +17,7 @@ function App() {
   const [gameState, setGameState] = useState(false);
   const [message, setMessage] = useState('');
   const [chatActive, setChatActive] = useState(true);
+  const [lobbyId, setLobbyId] = useState('');
 
   const inputRef = React.createRef();
   const auth = getAuth();
@@ -26,7 +27,7 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setPlayerId(user.uid);
-        const playerReference = ref(database, `players/${user.uid}`);
+        const playerReference = ref(database, `gugugaga/players/${user.uid}`);
         setPlayerRef(playerReference);
         onDisconnect(playerReference).remove();
       } else {
@@ -35,20 +36,20 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, [auth, database]);
+  }, [auth, database, lobbyId]);
 
   useEffect(() => { // Reads the game state from the database
-    const gameStateRef = ref(database, 'gameState');
+    const gameStateRef = ref(database, `${lobbyId}/gameState`);
     const unsubscribe = onValue(gameStateRef, (snapshot) => {
       const gameState = snapshot.val();
       setGameState(gameState);
     });
     return () => unsubscribe();
-  }, [database]);
+  }, [database, lobbyId]);
 
   const gameStart = () => { // Starts the game
     console.log('game start');
-    set(ref(database, 'gameState'), true);
+    set(ref(database, `${lobbyId}/gameState`), true);
   };
 
   useEffect(() => { // Signs the user in anonymously
@@ -58,7 +59,7 @@ function App() {
   }, [auth]);
 
   useEffect(() => { // Reads all players from the database
-    const allPlayersRef = ref(database, 'players');
+    const allPlayersRef = ref(database, `${lobbyId}/players`);
 
     const unsubscribe = onValue(allPlayersRef, (snapshot) => {
       const playersData = snapshot.val();
@@ -73,14 +74,14 @@ function App() {
         });
         setAllPlayersRef(playersArray);
       } else {
-        set(ref(database, 'gameState'), false);
+        set(ref(database, `${lobbyId}/gameState`), false);
       }
     })
     return () => unsubscribe();
-  }, [database]);
+  }, [database, lobbyId]);
 
   useEffect(() => { // Reads all messages from the chat
-    const chatRef = ref(database, 'chat');
+    const chatRef = ref(database, `${lobbyId}/chat`);
     const unsubscribe = onValue(chatRef, (snapshot) => {
       const chatData = snapshot.val();
       if (chatData) {
@@ -96,19 +97,19 @@ function App() {
     });
 
     return () => unsubscribe();
-  }, [database]);
+  }, [database, lobbyId]);
 
-
-  
   return (
     <div>
       {!usernameSet &&(
         <UsernameScreen 
         username={username}
         playerId={playerId}
-        playerRef={playerRef} 
-        setUsername={setUsername} 
+        playerRef={playerRef}
         setUsernameSet={setUsernameSet}
+        setUsername={setUsername}
+        lobbyId={lobbyId}
+        setLobbyId={setLobbyId}
         />
       )}
       {usernameSet && !gameState &&(
@@ -136,6 +137,11 @@ function App() {
           playerId={playerId}
           setChatActive={setChatActive}
           allMessagesRef={allMessagesRef}
+          setMessage={setMessage}
+          message={message}
+          username={username}
+          inputRef={inputRef}
+          database={database}
         />
       )}
     </div>

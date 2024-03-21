@@ -6,7 +6,7 @@ const sendMessage = (event, message, inputRef, username, database, setMessage) =
       return;
     } else {
       console.log(message);
-      const messageReference = ref(database, `chat/${message}`);
+      const messageReference = ref(database, `chat/${new Date().getTime()}`);
       set(messageReference, {
         message, 
         sender: username,
